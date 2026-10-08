@@ -1,0 +1,31 @@
+# Build outputs
+*.exe
+*.obj
+*.o
+*.dll
+*.pdb
+*.ilk
+*.lib
+*.a
+/build/
+/out/
+/Debug/
+/Release/
+/x64/
+
+# Generated simulation sessions
+/LapData/
+
+# Local editor and machine settings
+/.vscode/
+/.vs/
+*.user
+*.suo
+
+# Local secrets and OS files
+.env
+.env.*
+!.env.example
+Thumbs.db
+Desktop.ini
+.DS_Store
