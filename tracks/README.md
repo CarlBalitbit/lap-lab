@@ -2,7 +2,7 @@
 
 The pack contains 40 circuits. `monza.track`, `spa.track`, and `cota.track` retain their original sampled geometry, terrain elevations, and approximate turn markers. The other 37 use imported MIT-licensed centerlines and constant reference altitude. See [CATALOG.md](CATALOG.md) for the complete list and source revision.
 
-The menu discovers lowercase `.track` files in this folder. Original choices remain first, followed by other circuits sorted by name. Header metadata is read for the menu; the complete profile is loaded and validated only on selection. Invalid headers are skipped with a message; invalid selected profiles produce an error.
+The menu discovers lowercase `.track` files in this folder. All circuits are sorted alphabetically by their displayed names, including Monza, Spa and COTA. Header metadata is read for the menu; the complete profile is loaded and validated only on selection. Invalid headers are skipped with a message; invalid selected profiles produce an error.
 
 The plain-text format has fixed field order:
 
