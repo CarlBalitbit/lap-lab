@@ -6,7 +6,8 @@ A C++ console application for estimating lap times and comparing car setups on f
 
 - Solo runs or comparisons of up to six cars.
 - High-downforce, balanced, low-downforce, custom, and random car setups.
-- Monza, Spa-Francorchamps, and Circuit of the Americas track profiles.
+- 40 circuit profiles, covering all venues in the originally announced 2026 season plus historic circuits.
+- Automatic circuit discovery: add a valid `.track` file without recompiling.
 - Fictional presets and a custom track designer.
 - Flying qualifying laps and standing starts.
 - Basic setup defaults and advanced grip, traction, elevation, and sector settings.
@@ -55,6 +56,9 @@ Each completed run saves a new session folder under `LapData` by default. Open i
 - `f1_track_sim.cpp`: simulation, interactive setup, and report generation.
 - `tracks/*.track`: local circuit geometry and elevation profiles.
 - `tracks/README.md`: circuit file format and validation details.
+- `tracks/CATALOG.md`: complete circuit list, provenance, and approximation details.
+- `tools/import_circuits.py`: reproducible importer (Python 3 standard library only).
+- `tools/validate_circuits.cpp`: validates every circuit in qualifying and standing-start modes.
 - `CIRCUIT_DATA_LICENSE.txt`: license for the circuit geometry data.
 
 ## Model and limitations
@@ -63,6 +67,17 @@ The model includes constant wheel power, aerodynamic drag and downforce, load-se
 
 ## Circuit data attribution
 
-Circuit geometry comes from [bacinger/f1-circuits](https://github.com/bacinger/f1-circuits) under the MIT license; the required notice is preserved in `CIRCUIT_DATA_LICENSE.txt` and the source. Elevations use smoothed [Open Topo Data / SRTM90m](https://www.opentopodata.org/datasets/srtm/) terrain estimates.
+Circuit geometry comes from [bacinger/f1-circuits](https://github.com/bacinger/f1-circuits) under the MIT license; the required notice is preserved in `CIRCUIT_DATA_LICENSE.txt` and the source. The original Monza, Spa and COTA profiles use smoothed [Open Topo Data / SRTM90m](https://www.opentopodata.org/datasets/srtm/) terrain estimates. The 37 added profiles use constant upstream reference altitudes, so they do not model hills. Their turn labels are automatic curvature peaks, sectors are equal thirds, and source layouts may differ from current configurations. See [the circuit catalog](tracks/CATALOG.md) for provenance and limitations.
 
 The circuit-data license applies to that data. This repository does not currently declare a separate license for the simulator code.
+
+## Validate the circuit pack
+
+In a Visual Studio Developer PowerShell, from the project root:
+
+```powershell
+cl /std:c++17 /EHsc /O2 /utf-8 tools/validate_circuits.cpp /Fe:validate_circuits.exe
+.\validate_circuits.exe .\tracks
+```
+
+The validator loads every discoverable circuit and checks both lap modes, finite speeds, closure, and sector totals at the normal 0.25 m simulation spacing. It does not establish agreement with real F1 lap times.

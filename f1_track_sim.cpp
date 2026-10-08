@@ -98,7 +98,7 @@ Track presetTrack(int choice)
 }
 
 // Public centerline traces: bacinger/f1-circuits (MIT; license supplied).
-// Elevations: smoothed Open Topo Data SRTM90m terrain estimates.
+// Elevation provenance varies by circuit; see its data note and tracks/CATALOG.md.
 // Geometry lives in local .track files. No runtime downloads needed.
 Track loadTrackFile(const std::filesystem::path& path)
 {
@@ -145,11 +145,43 @@ Track loadTrackFile(const std::filesystem::path& path)
     return track;
 }
 
-Track realTrack(int choice,const std::filesystem::path& directory="tracks")
+struct CircuitFile
 {
-    const char* files[]={"monza.track","spa.track","cota.track"};
-    if(choice<1||choice>3)throw std::runtime_error("Unknown real circuit.");
-    return loadTrackFile(directory/files[choice-1]);
+    std::filesystem::path path;
+    std::string name;
+};
+
+std::vector<CircuitFile> discoverCircuits(const std::filesystem::path& directory)
+{
+    std::vector<CircuitFile> circuits;
+    // Read only the header here; full profile validation happens on selection.
+    for (const auto& file : std::filesystem::directory_iterator(directory)) {
+        if (!file.is_regular_file() || file.path().extension() != ".track") continue;
+        std::ifstream input(file.path());
+        input.imbue(std::locale::classic());
+        std::string magic, field, name;
+        int version = 0;
+        if (!(input >> magic >> version >> field >> std::quoted(name))
+            || magic != "F1TRACK" || version != 1 || field != "NAME" || name.empty()) {
+            std::cout << "Skipping invalid circuit header: " << file.path().filename().string() << "\n";
+            continue;
+        }
+        circuits.push_back({file.path(), name});
+    }
+    if (circuits.empty()) throw std::runtime_error("No valid .track files found in " + directory.string());
+    if (circuits.size() > static_cast<std::size_t>(std::numeric_limits<int>::max()))
+        throw std::runtime_error("Too many circuit files for the selection menu.");
+    auto rank = [](const std::filesystem::path& path) {
+        const auto name = path.filename().string();
+        return name == "monza.track" ? 0 : name == "spa.track" ? 1 : name == "cota.track" ? 2 : 3;
+    };
+    std::sort(circuits.begin(), circuits.end(), [&](const CircuitFile& a, const CircuitFile& b) {
+        const int ar = rank(a.path), br = rank(b.path);
+        if (ar != br) return ar < br;
+        if (a.name != b.name) return a.name < b.name;
+        return a.path.filename().string() < b.path.filename().string();
+    });
+    return circuits;
 }
 
 ProfilePoint sampleProfile(const Track& track, double distance)
@@ -429,7 +461,11 @@ Simulation simulateTrack(const Car& car, const Track& track,
         elevationDistance+=cell.length;
     }
     result.closureGap=std::hypot(mapX,mapY);
-    result.closed=result.closureGap<0.5 && std::abs(std::remainder(heading,2*3.14159265358979323846))<0.01;
+    // A loaded profile is already checked for endpoint/elevation closure.
+    // Its adjacent chords can have different headings when the finish is
+    // inside a corner; that sampling difference does not make it an open route.
+    result.closed=result.closureGap<0.5 && (!track.profile.empty()
+        || std::abs(std::remainder(heading,2*3.14159265358979323846))<0.01);
 
     // Finite upper bound from engine work, ignoring drag and tire limits:
     // v^3 <= startSpeed^3 + 3 * wheelPower * distance / mass.
@@ -1357,9 +1393,17 @@ int main(int argc, char* argv[])
         track=presetTrack(choice);
     } else if(trackChoice==3) {
         int choice=1;
-        std::cout << "\n--- REAL F1 CIRCUITS ---\n1. Monza\n2. Spa-Francorchamps\n3. Circuit of the Americas (COTA)\n";
-        if(!readInteger("Select a circuit: ",choice,1,3))return 1;
-        try { track=realTrack(choice,trackDirectory); }
+        std::vector<CircuitFile> circuits;
+        try { circuits = discoverCircuits(trackDirectory); }
+        catch (const std::exception& error) {
+            std::cout << "Could not list circuits: " << error.what() << "\n";
+            return 1;
+        }
+        std::cout << "\n--- REAL F1 CIRCUITS (" << circuits.size() << ") ---\n";
+        for (std::size_t i = 0; i < circuits.size(); ++i)
+            std::cout << i + 1 << ". " << circuits[i].name << "\n";
+        if(!readInteger("Select a circuit: ", choice, 1, static_cast<int>(circuits.size())))return 1;
+        try { track = loadTrackFile(circuits[static_cast<std::size_t>(choice - 1)].path); }
         catch(const std::exception& error){std::cout << "Could not load circuit: " << error.what() << "\n";return 1;}
         std::cout << "\nLoaded " << track.name << ".\n" << track.dataNote << "\n";
     }

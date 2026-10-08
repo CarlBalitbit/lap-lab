@@ -1,6 +1,8 @@
 # Local circuit files
 
-`monza.track`, `spa.track`, and `cota.track` contain the same sampled geometry, elevations, and turn markers previously embedded in the source. Editing track data no longer requires recompiling the simulator. Files are read only when their circuit is selected.
+The pack contains 40 circuits. `monza.track`, `spa.track`, and `cota.track` retain their original sampled geometry, terrain elevations, and approximate turn markers. The other 37 use imported MIT-licensed centerlines and constant reference altitude. See [CATALOG.md](CATALOG.md) for the complete list and source revision.
+
+The menu discovers lowercase `.track` files in this folder. Original choices remain first, followed by other circuits sorted by name. Header metadata is read for the menu; the complete profile is loaded and validated only on selection. Invalid headers are skipped with a message; invalid selected profiles produce an error.
 
 The plain-text format has fixed field order:
 
@@ -29,6 +31,6 @@ This is a format illustration, not a complete loadable circuit.
 
 The loader checks versions, counts, finite values, ordering, sector boundaries, full lap coverage, and closure. Missing or malformed files produce a console error instead of running invalid data.
 
-The current menu is mapped to these three filenames. Adding another circuit to the menu still requires a small C++ menu change, but updating an existing circuit's data does not.
+Add or edit a valid `.track` file to extend the menu without recompiling. Restart the circuit selection to pick up changes. Missing/empty circuit folders produce a clear console error.
 
-Geometry source: [bacinger/f1-circuits](https://github.com/bacinger/f1-circuits), MIT license (included in the parent folder). Elevation source: [Open Topo Data / SRTM90m](https://www.opentopodata.org/datasets/srtm/). Profiles and markers remain approximate.
+Geometry source: [bacinger/f1-circuits](https://github.com/bacinger/f1-circuits), MIT license (included in the parent folder). Original three terrain profiles: [Open Topo Data / SRTM90m](https://www.opentopodata.org/datasets/srtm/). Imported profiles use upstream reference altitudes and do not model hills or banking. Curvature-peak labels are not official turn numbering. Profiles, source configurations, starts, and sectors remain approximate.
