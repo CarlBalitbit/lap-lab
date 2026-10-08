@@ -4,6 +4,8 @@ F1 Lap Time Simulator
 
 **Version 0.1.0 - initial development**
 
+Lap Lab is a personal project made for fun and experimentation. It uses simplified physics and approximate circuit data, and is not intended for professional engineering, high-fidelity vehicle modeling, or real-world performance decisions. Its results should be treated as illustrative estimates.
+
 Created by **Carl Balitbit**. Unofficial educational project; not affiliated with or endorsed by Formula 1 or the FIA.
 
 A C++ console application for estimating lap times and comparing car setups on fictional, custom, and sampled real-world circuits.
