@@ -1,0 +1,45 @@
+name: Build and validate
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Build simulator and validators
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $installation = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (-not $installation) { throw 'MSVC installation not found' }
+          New-Item -ItemType Directory -Force build | Out-Null
+          @"
+          @echo off
+          call "$installation\VC\Auxiliary\Build\vcvars64.bat"
+          if errorlevel 1 exit /b 1
+          cl /nologo /std:c++17 /EHsc /O2 /MT /utf-8 f1_track_sim.cpp /Fe:build\f1_track_sim.exe /Fo:build\f1_track_sim.obj
+          if errorlevel 1 exit /b 1
+          cl /nologo /std:c++17 /EHsc /O2 /MT /utf-8 tools\validate_circuits.cpp /Fe:build\validate_circuits.exe /Fo:build\validate_circuits.obj
+          if errorlevel 1 exit /b 1
+          cl /nologo /std:c++17 /EHsc /O2 /MT /utf-8 tools\validate_races.cpp /Fe:build\validate_races.exe /Fo:build\validate_races.obj
+          exit /b %errorlevel%
+          "@ | Set-Content -Encoding ascii build\compile.cmd
+          & cmd /c build\compile.cmd
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Validate all circuit profiles
+        shell: pwsh
+        run: |
+          & .\build\validate_circuits.exe .\tracks
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Validate continuous races
+        shell: pwsh
+        run: |
+          & .\build\validate_races.exe .\tracks
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

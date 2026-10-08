@@ -1,5 +1,9 @@
 # F1 Lap Time Simulator
 
+**Version 0.1.0 - initial development**
+
+Created by **Carl Balitbit**. Unofficial educational project; not affiliated with or endorsed by Formula 1 or the FIA.
+
 A C++ console application for estimating lap times and comparing car setups on fictional, custom, and sampled real-world circuits.
 
 ## Features
@@ -14,6 +18,10 @@ A C++ console application for estimating lap times and comparing car setups on f
 - Basic setup defaults and advanced grip, traction, elevation, and sector settings.
 - Saved HTML reports with a clean dark dashboard, track maps and telemetry, CSV results, and JSON session data.
 - Playback-speed slider, telemetry chart zoom, and a manual position lock. Hidden comparison cars cannot be selected for map follow.
+
+## Run the Windows release
+
+Download the Windows x64 ZIP from the repository Releases page when published. Extract the entire folder and run `f1_track_sim.exe`; keep the included `tracks` folder beside it. No compiler is needed for the packaged download. Open new HTML reports in a modern browser.
 
 ## Build on Windows
 
@@ -71,7 +79,7 @@ The model includes constant wheel power, aerodynamic drag and downforce, load-se
 
 Circuit geometry comes from [bacinger/f1-circuits](https://github.com/bacinger/f1-circuits) under the MIT license; the required notice is preserved in `CIRCUIT_DATA_LICENSE.txt` and the source. The original Monza, Spa and COTA profiles use smoothed [Open Topo Data / SRTM90m](https://www.opentopodata.org/datasets/srtm/) terrain estimates. The 37 added profiles use constant upstream reference altitudes, so they do not model hills. Their turn labels are automatic curvature peaks, sectors are equal thirds, and source layouts may differ from current configurations. See [the circuit catalog](tracks/CATALOG.md) for provenance and limitations.
 
-The circuit-data license applies to that data. This repository does not currently declare a separate license for the simulator code.
+The simulator code is licensed under the [MIT License](LICENSE), copyright 2026 Carl Balitbit. Retain its copyright and license notice when redistributing it. Third-party circuit data retains its separate notice in `CIRCUIT_DATA_LICENSE.txt`.
 
 ## Validate the circuit pack
 
@@ -100,3 +108,11 @@ To validate race physics in a Visual Studio Developer PowerShell:
 cl /std:c++17 /EHsc /O2 /utf-8 tools/validate_races.cpp /Fe:validate_races.exe
 .\validate_races.exe .\tracks
 ```
+
+## Versioning
+
+Release names follow [Semantic Versioning](https://semver.org/), using `MAJOR.MINOR.PATCH`; Git tags use a `v` prefix, such as `v0.1.0`. During initial development (`0.x.x`), compatibility may change. Our development convention increments PATCH for compatible fixes and MINOR for new features or breaking format changes. Released versions are never replaced with different contents.
+
+The documented compatibility surface consists of command-line arguments, the `F1TRACK` file format and exported CSV/JSON schemas. Version 1.0.0 will mark a stable compatibility promise; after that, incompatible changes to this surface require a major version increment. The `F1TRACK` version and JSON `format_version` are independent schema versions, not application release numbers. Display styling and numerical predictions are not guaranteed to remain identical between releases.
+
+See [CHANGELOG.md](CHANGELOG.md) and [RELEASE_NOTES.md](RELEASE_NOTES.md) for release details. Report issues with the app version, circuit, car settings, mode and steps to reproduce. Do not include private files or credentials.
