@@ -1,10 +1,12 @@
-# F1 Lap Time Simulator 0.1.0
+# Lap Lab 0.1.0
+
+F1 Lap Time Simulator
 
 First development release of an unofficial C++ lap-time and car-comparison project by Carl Balitbit.
 
 ## Windows download
 
-Download `f1-lap-time-simulator-0.1.0-windows-x64.zip`, extract the entire folder, and run `f1_track_sim.exe`. Keep `tracks` beside the executable. The release contains a statically linked MSVC runtime; no compiler is needed to run it. It targets 64-bit Windows and was checked on the author's Windows machine.
+Download `lap-lab-0.1.0-windows-x64.zip`, extract the entire folder, and run `f1_track_sim.exe`. Keep `tracks` beside the executable. The release contains a statically linked MSVC runtime; no compiler is needed to run it. It targets 64-bit Windows and was checked on the author's Windows machine.
 
 Choose Basic settings for a quick start. Qualifying simulates a flying lap; Race offers standing or rolling starts and 1-20 continuous laps. Open the newly saved `LapData/.../session_report.html` in a modern browser. Enter accepts defaults, B goes back and Q quits.
 

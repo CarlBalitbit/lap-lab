@@ -708,7 +708,7 @@ void exportTelemetry(const Car& car, const Simulation& result, double mu,
     const char* modeName = isRace(mode) ? (mode == LapMode::RaceStanding ? "Race first lap / standing start" : "Race first lap / rolling start") : modeLabel(mode);
     html << R"HTML(<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lap telemetry</title><style>
+<title>Lap Lab | Lap telemetry</title><style>
 )HTML" << reportStyles() << R"HTML(
 </style></head><body><main><div class="topbar"><div class="brand"><span class="brand-mark" aria-hidden="true">↗</span>LAP LAB <span class="version">v)HTML" << simulatorVersion << R"HTML(</span></div><nav><a href="#overview">Overview</a><a href="#telemetry">Telemetry</a><span class="local-status">Offline report</span></nav></div><header id="overview"><div><div class="eyebrow">Lap telemetry</div><h1 id="heading"></h1><p id="subtitle"></p></div><div class="pill" id="mode"></div></header>
 
@@ -1212,7 +1212,7 @@ void writeComparisonReport(const std::vector<Entry>& entries, std::size_t refere
     if (!out) throw std::runtime_error("Could not create session report.");
     out.imbue(std::locale::classic()); out << std::setprecision(15);
     out << R"HTML(<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lap session report</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lap Lab | Session report</title>
 <style>
 )HTML" << reportStyles() << R"HTML(
 </style></head><body><main><div class="topbar"><div class="brand"><span class="brand-mark" aria-hidden="true">↗</span>LAP LAB <span class="version">v)HTML" << simulatorVersion << R"HTML(</span></div><nav><a href="#overview">Overview</a><a href="#telemetry">Telemetry</a><span class="local-status">Offline report</span></nav></div>
@@ -1614,7 +1614,7 @@ int main(int argc, char* argv[])
     const auto programDirectory=std::filesystem::absolute(std::filesystem::path(argv[0])).parent_path();
     const std::filesystem::path trackDirectory=argc>2 ? std::filesystem::path(argv[2]) : programDirectory/"tracks";
     const std::filesystem::path outputRoot=argc>1 ? std::filesystem::path(argv[1]) : programDirectory/"LapData";
-    std::cout << "\nF1 LAP TIME SIMULATOR v" << simulatorVersion << "\nEnter accepts the preset default. B goes back one answer; Q quits.\n";
+    std::cout << "\nLAP LAB - F1 LAP TIME SIMULATOR v" << simulatorVersion << "\nEnter accepts the preset default. B goes back one answer; Q quits.\n";
     try {
     for(;;) {
     SetupInput input;

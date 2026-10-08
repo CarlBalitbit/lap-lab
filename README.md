@@ -1,4 +1,6 @@
-# F1 Lap Time Simulator
+# Lap Lab
+
+F1 Lap Time Simulator
 
 **Version 0.1.0 - initial development**
 
