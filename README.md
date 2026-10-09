@@ -8,6 +8,8 @@ Lap Lab is a personal project made for fun and experimentation. It uses simplifi
 
 Created by **Carl Balitbit**. Unofficial educational project; not affiliated with or endorsed by Formula 1 or the FIA.
 
+**[View a live example report](https://carlbalitbit.github.io/lap-lab/docs/example/session_report.html)**: a three-car, three-lap standing-start race on a fictional circuit, with the map, telemetry charts and race playback. It's a demonstration, not a measured F1 result.
+
 A C++ console application for estimating lap times and comparing car setups on fictional, custom, and sampled real-world circuits.
 
 ## Features
@@ -25,7 +27,7 @@ A C++ console application for estimating lap times and comparing car setups on f
 
 ## Run the Windows release
 
-Download the Windows x64 ZIP from the repository Releases page when published. Extract the entire folder and run `f1_track_sim.exe`; keep the included `tracks` folder beside it. No compiler is needed for the packaged download. Open new HTML reports in a modern browser.
+Download `lap-lab-0.1.0-windows-x64.zip` from the [latest release](https://github.com/CarlBalitbit/lap-lab/releases/latest).
 
 ## Build on Windows
 
