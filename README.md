@@ -123,6 +123,26 @@ cl /std:c++17 /EHsc /O2 /utf-8 tools/validate_races.cpp /Fe:validate_races.exe
 .\validate_races.exe .\tracks
 ```
 
+### Analytical verification and grid refinement
+
+Stage 1 adds independent mathematical checks and comparisons at 0.5, 0.25,
+and 0.125 m maximum cell spacing. Acceptance thresholds are engineering targets;
+passing them does not validate real-car lap predictions. See
+[Physics validation](docs/PHYSICS_VALIDATION.md) for references, tolerances,
+measured errors, and the distinction between convergence and grid stability.
+
+In a Visual Studio Developer PowerShell, from the project root:
+
+```powershell
+cl /std:c++17 /EHsc /O2 /utf-8 tools/validate_physics.cpp /Fe:validate_physics.exe
+cl /std:c++17 /EHsc /O2 /utf-8 tools/validate_convergence.cpp /Fe:validate_convergence.exe
+.\validate_physics.exe
+.\validate_convergence.exe .\tracks
+```
+
+Both validators return nonzero on failure and print numerical errors. Windows CI
+builds and runs them alongside the existing circuit and race validators.
+
 ## Project files
 
 - `f1_track_sim.cpp`: simulation, interactive setup, and report generation.

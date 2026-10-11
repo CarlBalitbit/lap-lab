@@ -29,6 +29,10 @@ jobs:
           cl /nologo /std:c++17 /EHsc /O2 /MT /utf-8 tools\validate_circuits.cpp /Fe:build\validate_circuits.exe /Fo:build\validate_circuits.obj
           if errorlevel 1 exit /b 1
           cl /nologo /std:c++17 /EHsc /O2 /MT /utf-8 tools\validate_races.cpp /Fe:build\validate_races.exe /Fo:build\validate_races.obj
+          if errorlevel 1 exit /b 1
+          cl /nologo /std:c++17 /EHsc /O2 /MT /utf-8 tools\validate_physics.cpp /Fe:build\validate_physics.exe /Fo:build\validate_physics.obj
+          if errorlevel 1 exit /b 1
+          cl /nologo /std:c++17 /EHsc /O2 /MT /utf-8 tools\validate_convergence.cpp /Fe:build\validate_convergence.exe /Fo:build\validate_convergence.obj
           exit /b %errorlevel%
           "@ | Set-Content -Encoding ascii build\compile.cmd
           & cmd /c build\compile.cmd
@@ -43,3 +47,23 @@ jobs:
         run: |
           & .\build\validate_races.exe .\tracks
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify analytical physics
+        shell: pwsh
+        run: |
+          $timer = [Diagnostics.Stopwatch]::StartNew()
+          & .\build\validate_physics.exe
+          $validationExit = $LASTEXITCODE
+          Write-Output "Analytical validation runtime: $($timer.Elapsed.TotalSeconds) s"
+          if ($validationExit -ne 0) { exit $validationExit }
+      - name: Verify blocking convergence invariants and report diagnostic accuracy targets
+        shell: pwsh
+        run: |
+          $timer = [Diagnostics.Stopwatch]::StartNew()
+          # Never use continue-on-error: execution/invariant failures must block CI.
+          & .\build\validate_convergence.exe --self-test
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & .\build\validate_convergence.exe .\tracks
+          $validationExit = $LASTEXITCODE
+          Write-Output "Convergence validation runtime: $($timer.Elapsed.TotalSeconds) s"
+          Write-Output "Provisional accuracy exceedances are diagnostic; mandatory failures return nonzero."
+          if ($validationExit -ne 0) { exit $validationExit }
