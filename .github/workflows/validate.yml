@@ -67,3 +67,25 @@ jobs:
           Write-Output "Convergence validation runtime: $($timer.Elapsed.TotalSeconds) s"
           Write-Output "Provisional accuracy exceedances are diagnostic; mandatory failures return nonzero."
           if ($validationExit -ne 0) { exit $validationExit }
+      - name: Test Windows release packaging
+        shell: pwsh
+        timeout-minutes: 3
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $PSNativeCommandUseErrorActionPreference = $true
+          $timer = [Diagnostics.Stopwatch]::StartNew()
+          try {
+              $LASTEXITCODE = 0
+              $result = & .\tools\test_package_windows.ps1 -ExecutablePath .\build\f1_track_sim.exe
+              $packagingExit = $LASTEXITCODE
+              if ($packagingExit -ne 0) {
+                  throw "Packaging test process failed with exit code $packagingExit."
+              }
+              if (@($result).Count -ne 1 -or $result.Checks -ne 27) {
+                  throw "Expected one result confirming all 27 packaging checks passed."
+              }
+              $result | Format-List
+          }
+          finally {
+              Write-Output "Packaging test runtime: $($timer.Elapsed.TotalSeconds) s"
+          }

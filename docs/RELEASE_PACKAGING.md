@@ -99,6 +99,9 @@ without the build toolchain. These require additional manual/environment checks.
 
 ## Future GitHub Releases connection
 
+Packaging tests are now integrated into the existing validation workflow as
+described below. Release artifact upload and publication remain future work.
+
 A separately approved workflow can run existing mandatory validators, packaging
 tests, and this packager using the executable from the same build. Upload the ZIP
 and checksum as reviewable CI artifacts. A later authorized release job can publish
@@ -133,3 +136,45 @@ checks and has the same SHA-256 recorded above, confirming byte-identical archiv
 contents despite changed source paths. All seven source files appear unignored
 in normal Git status. Production source, workflow, and `.gitignore` hashes match
 their Git versions. No old release assets were overwritten.
+
+## Windows CI packaging tests
+
+The existing `windows-latest` job builds the application once and runs circuit,
+race, analytical physics, and convergence validation with their existing failure
+policies. A final `Test Windows release packaging` PowerShell step runs all 27
+packaging checks using that same `build/f1_track_sim.exe`; it does not rebuild C++.
+Normal successful-step ordering places it after convergence validation. The job
+timeout remains 15 minutes; the packaging step has a three-minute timeout.
+
+The step stops on PowerShell exceptions, enables native-command error propagation,
+checks any returned process exit code, and requires exactly one result reporting
+27 successful checks. The test script also checks both extracted application's
+exit codes and enforces 30-second process timeouts. No `continue-on-error` setting
+or failure suppression is used. Timing is printed even when an exception occurs.
+
+Test packages, intentionally malformed archives, and extracted sessions are
+isolated in unique `build/package-tests-<GUID>/` directories. No files are written
+to `build/releases/`; tests never upload artifacts, invoke GitHub Releases, replace
+published assets, or overwrite existing release packages. Workflow permissions
+remain read-only. The two ZIP creations test reproducibility within one runner;
+they are not duplicate executable builds and do not require a fixed cross-run ZIP
+hash across different compiler/runtime environments.
+
+Prior local packaging measurements were 8-9 seconds. Budget approximately 10-30
+additional seconds on hosted Windows, subject to runner performance. The step's
+three-minute bound also allows for both smoke-test timeouts and packaging overhead.
+Hosted GitHub Actions has not been triggered by this implementation; local checks
+and runtime measurements do not establish hosted execution success.
+
+Local integration verification executed the exact new workflow PowerShell block:
+all 27 checks passed in 9.29 seconds. In-memory guard probes confirmed rejection
+of a thrown exception, 26 completed checks, multiple result objects, and a nonzero
+process exit code. Probes did not modify the packaging scripts. Existing workflow
+content before the appended step is unchanged; all six PowerShell blocks parsed
+successfully. Job/step timeouts and read-only permissions were checked, with no
+upload, publication, or failure-suppression settings added. Existing release ZIP
+and checksum hashes and both packaging-script hashes remained unchanged.
+
+A full YAML/Actions schema linter was unavailable locally; verification covered
+workflow structure and native PowerShell syntax/execution. Hosted Actions remains
+unverified until a separately authorized push triggers the workflow.
