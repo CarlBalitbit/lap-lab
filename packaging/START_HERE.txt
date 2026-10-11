@@ -1,0 +1,11 @@
+LAP LAB - WINDOWS X64
+
+Extract the whole ZIP into a writable folder.
+Run f1_track_sim.exe. Keep the tracks folder beside it.
+Choose Basic settings for a quick start.
+Enter accepts defaults; B goes back; Q quits.
+After a run, open LapData/<session>/session_report.html in a modern browser.
+
+See README.md for instructions and modeling limitations.
+No compiler or network connection is required to run this package.
+The VERSION file identifies this build's intended release version.

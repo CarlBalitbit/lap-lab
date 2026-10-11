@@ -1,0 +1,205 @@
+{
+  "format_version": 1,
+  "files": [
+    {
+      "source": "@executable",
+      "destination": "f1_track_sim.exe"
+    },
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE"
+    },
+    {
+      "source": "CIRCUIT_DATA_LICENSE.txt",
+      "destination": "CIRCUIT_DATA_LICENSE.txt"
+    },
+    {
+      "source": "VERSION",
+      "destination": "VERSION"
+    },
+    {
+      "source": "packaging/START_HERE.txt",
+      "destination": "START_HERE.txt"
+    },
+    {
+      "source": "packaging/README.md",
+      "destination": "README.md"
+    },
+    {
+      "source": "packaging/RELEASE_NOTES.md",
+      "destination": "RELEASE_NOTES.md"
+    },
+    {
+      "source": "CHANGELOG.md",
+      "destination": "CHANGELOG.md"
+    },
+    {
+      "source": "tracks/ae-2009.track",
+      "destination": "tracks/ae-2009.track"
+    },
+    {
+      "source": "tracks/ar-1952.track",
+      "destination": "tracks/ar-1952.track"
+    },
+    {
+      "source": "tracks/at-1969.track",
+      "destination": "tracks/at-1969.track"
+    },
+    {
+      "source": "tracks/au-1953.track",
+      "destination": "tracks/au-1953.track"
+    },
+    {
+      "source": "tracks/az-2016.track",
+      "destination": "tracks/az-2016.track"
+    },
+    {
+      "source": "tracks/bh-2002.track",
+      "destination": "tracks/bh-2002.track"
+    },
+    {
+      "source": "tracks/br-1940.track",
+      "destination": "tracks/br-1940.track"
+    },
+    {
+      "source": "tracks/br-1977.track",
+      "destination": "tracks/br-1977.track"
+    },
+    {
+      "source": "tracks/ca-1978.track",
+      "destination": "tracks/ca-1978.track"
+    },
+    {
+      "source": "tracks/CATALOG.md",
+      "destination": "tracks/CATALOG.md"
+    },
+    {
+      "source": "tracks/cn-2004.track",
+      "destination": "tracks/cn-2004.track"
+    },
+    {
+      "source": "tracks/cota.track",
+      "destination": "tracks/cota.track"
+    },
+    {
+      "source": "tracks/de-1927.track",
+      "destination": "tracks/de-1927.track"
+    },
+    {
+      "source": "tracks/de-1932.track",
+      "destination": "tracks/de-1932.track"
+    },
+    {
+      "source": "tracks/es-1991.track",
+      "destination": "tracks/es-1991.track"
+    },
+    {
+      "source": "tracks/es-2026.track",
+      "destination": "tracks/es-2026.track"
+    },
+    {
+      "source": "tracks/fr-1960.track",
+      "destination": "tracks/fr-1960.track"
+    },
+    {
+      "source": "tracks/fr-1969.track",
+      "destination": "tracks/fr-1969.track"
+    },
+    {
+      "source": "tracks/gb-1948.track",
+      "destination": "tracks/gb-1948.track"
+    },
+    {
+      "source": "tracks/hu-1986.track",
+      "destination": "tracks/hu-1986.track"
+    },
+    {
+      "source": "tracks/it-1914.track",
+      "destination": "tracks/it-1914.track"
+    },
+    {
+      "source": "tracks/it-1953.track",
+      "destination": "tracks/it-1953.track"
+    },
+    {
+      "source": "tracks/jp-1962.track",
+      "destination": "tracks/jp-1962.track"
+    },
+    {
+      "source": "tracks/mc-1929.track",
+      "destination": "tracks/mc-1929.track"
+    },
+    {
+      "source": "tracks/monza.track",
+      "destination": "tracks/monza.track"
+    },
+    {
+      "source": "tracks/mx-1962.track",
+      "destination": "tracks/mx-1962.track"
+    },
+    {
+      "source": "tracks/my-1999.track",
+      "destination": "tracks/my-1999.track"
+    },
+    {
+      "source": "tracks/nl-1948.track",
+      "destination": "tracks/nl-1948.track"
+    },
+    {
+      "source": "tracks/pt-1972.track",
+      "destination": "tracks/pt-1972.track"
+    },
+    {
+      "source": "tracks/pt-2008.track",
+      "destination": "tracks/pt-2008.track"
+    },
+    {
+      "source": "tracks/qa-2004.track",
+      "destination": "tracks/qa-2004.track"
+    },
+    {
+      "source": "tracks/README.md",
+      "destination": "tracks/README.md"
+    },
+    {
+      "source": "tracks/ru-2014.track",
+      "destination": "tracks/ru-2014.track"
+    },
+    {
+      "source": "tracks/sa-2021.track",
+      "destination": "tracks/sa-2021.track"
+    },
+    {
+      "source": "tracks/sg-2008.track",
+      "destination": "tracks/sg-2008.track"
+    },
+    {
+      "source": "tracks/spa.track",
+      "destination": "tracks/spa.track"
+    },
+    {
+      "source": "tracks/tr-2005.track",
+      "destination": "tracks/tr-2005.track"
+    },
+    {
+      "source": "tracks/us-1909.track",
+      "destination": "tracks/us-1909.track"
+    },
+    {
+      "source": "tracks/us-1956.track",
+      "destination": "tracks/us-1956.track"
+    },
+    {
+      "source": "tracks/us-2022.track",
+      "destination": "tracks/us-2022.track"
+    },
+    {
+      "source": "tracks/us-2023.track",
+      "destination": "tracks/us-2023.track"
+    },
+    {
+      "source": "tracks/za-1961.track",
+      "destination": "tracks/za-1961.track"
+    }
+  ]
+}
