@@ -99,12 +99,10 @@ without the build toolchain. These require additional manual/environment checks.
 
 ## Future GitHub Releases connection
 
-Packaging tests are now integrated into the existing validation workflow as
-described below. Release artifact upload and publication remain future work.
+Packaging tests and downloadable Actions artifacts are integrated into the existing
+validation workflow as described below. GitHub Release publication remains future work.
 
-A separately approved workflow can run existing mandatory validators, packaging
-tests, and this packager using the executable from the same build. Upload the ZIP
-and checksum as reviewable CI artifacts. A later authorized release job can publish
+A later authorized release job can publish
 only these two files after matching the release tag to `VERSION`. Keep normal
 failure propagation; do not suppress packaging/manifest failures. No release job,
 validation-policy change, tag creation, publishing, or existing-asset replacement
@@ -178,3 +176,103 @@ and checksum hashes and both packaging-script hashes remained unchanged.
 A full YAML/Actions schema linter was unavailable locally; verification covered
 workflow structure and native PowerShell syntax/execution. Hosted Actions remains
 unverified until a separately authorized push triggers the workflow.
+
+## Milestone 4: downloadable Windows Actions artifacts
+
+After all existing mandatory validations and the 27 packaging checks succeed,
+two steps generate and upload a verified Windows package. Both use normal
+successful-step ordering: prior failure or cancellation prevents generation/upload.
+No `always()` or `continue-on-error` override bypasses validation.
+
+Generation reuses `build/f1_track_sim.exe` without another C++ build. The packager
+writes to fresh `build/ci-artifacts/<run-id>-<run-attempt>/`; an existing directory
+is rejected. Its existing manifest, duplicate/path/content checks, and refusal to
+overwrite ZIP/checksum files remain unchanged. The workflow requires both outputs,
+re-verifies the 50-file archive, independently recomputes the ZIP SHA-256, and
+checks the exact checksum line and returned hash before exposing upload paths.
+Exceptions, process errors, missing outputs, or mismatches block the workflow.
+
+The official `actions/upload-artifact@v7.0.2` receives only the two exact verified
+file paths, not a directory or wildcard. Both files share one artifact named
+`lap-lab-windows-x64-<run-id>-<run-attempt>`. Upload settings are:
+
+- `if-no-files-found: error`
+- `overwrite: false`
+- `compression-level: 0` (the payload ZIP is already compressed)
+- `retention-days: 14`
+
+Run/attempt names separate reruns. Upload failure blocks CI. Permissions remain
+`contents: read`; no repository write permission, secrets, release commands, tag
+creation, or v0.1.0 replacement is added. The job keeps its 15-minute timeout;
+generation has a three-minute step timeout. Local packaging has taken under one
+second; budget roughly 5-30 seconds for generation/verification/upload on hosted
+Windows, depending on network and runner performance. Retention is subject to
+repository/organization policy; artifacts can expire or be deleted.
+
+### Download and verify
+
+1. Sign into GitHub with read access to the repository. Open **Actions**, select
+   a successful **Build and validate** run, and confirm its branch/PR, commit SHA,
+   run ID, and attempt match the build you intend to review.
+2. In the run's **Artifacts** section, download
+   `lap-lab-windows-x64-<run-id>-<run-attempt>` before it expires.
+3. Extract the downloaded outer artifact ZIP into a fresh directory. It contains
+   `lap-lab-<VERSION>-windows-x64.zip` and `SHA256SUMS.txt`.
+4. From that directory, verify the **inner** Windows package before extracting it:
+
+   ```powershell
+   $line = [IO.File]::ReadAllText((Join-Path (Get-Location) 'SHA256SUMS.txt')).TrimEnd("`r", "`n")
+   if ($line -notmatch '^([a-f0-9]{64})  (lap-lab-[0-9A-Za-z.-]+-windows-x64\.zip)$') {
+       throw 'Malformed checksum file'
+   }
+   $expected = $Matches[1]
+   $zipName = $Matches[2]
+   $actual = (Get-FileHash -LiteralPath $zipName -Algorithm SHA256).Hash.ToLowerInvariant()
+   if ($actual -cne $expected) { throw 'SHA-256 mismatch' }
+   Write-Output "Verified $zipName"
+   ```
+
+5. Extract the verified inner ZIP and follow `START_HERE.txt`. Keep its `tracks`
+   directory beside the executable. Browser/manual checks remain recommended.
+
+The upload action's artifact digest describes the outer Actions artifact, not
+the inner ZIP checksum. SHA-256 establishes integrity relative to the companion
+checksum, not publisher signing or trust in a PR build. Review source/commit
+provenance before running binaries. Retain the run URL/commit SHA with downloaded
+copies; the application version alone does not identify which CI commit built them.
+
+These are temporary CI build snapshots, including branch/PR builds when their
+workflows run. They are not GitHub Releases, do not create tags, and do not replace
+the existing v0.1.0 download. A later release requires separate authorization.
+The 14-day artifacts are not intended as permanent portfolio/release hosting.
+
+### Milestone 4 local verification
+
+The exact workflow packaging-test block passed all 27 checks in 9.40 s. The exact
+generation block completed in 1.27 s using the existing executable, with 50 files
+and ZIP SHA-256
+`45669266c6c9e87b01664268589ca21dac2cde2b52422336ebcbd22ac5a6d115`.
+The companion checksum and independent archive verification agreed. A repeated
+invocation with the same run/attempt was rejected without overwriting the outputs.
+
+In-memory probes exercised the unchanged workflow generation/verification logic
+with injected exceptions, nonzero process exit codes, invalid result counts,
+missing checksum output, malformed checksum text, incorrect returned hash, and
+tampered ZIP contents. All were rejected before upload paths were emitted.
+The download verification command above was also executed against the valid
+local outputs. Packaging scripts were not modified by these probes.
+
+All seven workflow PowerShell blocks parse; existing workflow content preceding
+the two appended steps is unchanged. Upload configuration was checked against
+the official action's pinned v7.0.2 input definitions, including its default
+outer-ZIP behavior. Exact two-file paths, run/attempt naming, error/overwrite/
+compression/retention settings, read-only permissions, and timeout settings were
+checked locally. Existing production source, executable, packaging scripts,
+manifest, and original local release ZIP/checksum hashes remained unchanged.
+
+No hosted upload/download was attempted. A full YAML/Actions schema linter is
+unavailable locally; native PowerShell syntax and structural/configuration checks
+were performed instead. Successful hosted execution, service authentication,
+download layout, retention behavior, and network timing remain to be confirmed
+after a separately authorized push or workflow run. The artifact steps do not
+publish releases, create tags, or write repository contents.

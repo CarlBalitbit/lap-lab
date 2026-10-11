@@ -89,3 +89,53 @@ jobs:
           finally {
               Write-Output "Packaging test runtime: $($timer.Elapsed.TotalSeconds) s"
           }
+      - name: Generate verified Windows CI package
+        id: windows_package
+        shell: pwsh
+        timeout-minutes: 3
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $PSNativeCommandUseErrorActionPreference = $true
+          $timer = [Diagnostics.Stopwatch]::StartNew()
+          try {
+              if ($env:GITHUB_RUN_ID -notmatch '^\d+$' -or $env:GITHUB_RUN_ATTEMPT -notmatch '^\d+$') {
+                  throw 'Invalid workflow run/attempt identifiers.'
+              }
+              $outputDirectory = "build/ci-artifacts/$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT"
+              if (Test-Path -LiteralPath $outputDirectory) {
+                  throw 'CI output directory already exists; refusing to reuse it.'
+              }
+              $LASTEXITCODE = 0
+              $package = & .\tools\package_windows.ps1 -ExecutablePath .\build\f1_track_sim.exe -OutputDirectory $outputDirectory
+              if ($LASTEXITCODE -ne 0) { throw "Package generation failed with exit code $LASTEXITCODE." }
+              if (@($package).Count -ne 1 -or $package.Files -ne 50) { throw 'Invalid packaging result.' }
+              foreach ($path in @($package.ZipPath, $package.ChecksumPath)) {
+                  if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Missing package output: $path" }
+              }
+              $verified = & .\tools\package_windows.ps1 -ExecutablePath .\build\f1_track_sim.exe -VerifyOnly -ArchivePath $package.ZipPath
+              if ($LASTEXITCODE -ne 0 -or @($verified).Count -ne 1 -or -not $verified.Verified -or $verified.Files -ne 50) {
+                  throw 'Package content verification failed.'
+              }
+              $hash = (Get-FileHash -LiteralPath $package.ZipPath -Algorithm SHA256).Hash.ToLowerInvariant()
+              $expectedChecksum = "$hash  $([IO.Path]::GetFileName($package.ZipPath))`n"
+              if ($package.SHA256 -cne $hash -or [IO.File]::ReadAllText($package.ChecksumPath) -cne $expectedChecksum) {
+                  throw 'Package SHA-256/checksum mismatch.'
+              }
+              "zip_path=$($package.ZipPath)" | Out-File -LiteralPath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+              "checksum_path=$($package.ChecksumPath)" | Out-File -LiteralPath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+              $package | Format-List
+          }
+          finally {
+              Write-Output "CI package generation runtime: $($timer.Elapsed.TotalSeconds) s"
+          }
+      - name: Upload Windows CI package and checksum
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: lap-lab-windows-x64-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ steps.windows_package.outputs.zip_path }}
+            ${{ steps.windows_package.outputs.checksum_path }}
+          if-no-files-found: error
+          overwrite: false
+          compression-level: 0
+          retention-days: 14
